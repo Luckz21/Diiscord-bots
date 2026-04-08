@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+require('./deploy-commands');
 
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const fs = require('fs');
