@@ -1,12 +1,12 @@
 {
-  "name": "discord-status-bot",
-  "version": "1.0.0",
-  "description": "Bot que reporta el estado de tu cuenta de Discord",
+  "name": "discord-roblox-bot",
+  "version": "3.0.0",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
   },
   "dependencies": {
-    "discord.js": "^14.15.3"
+    "discord.js": "^14.15.3",
+    "mongodb": "^6.3.0"
   }
 }
