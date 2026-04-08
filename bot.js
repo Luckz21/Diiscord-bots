@@ -1,34 +1,43 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const { MongoClient } = require('mongodb');
 
-// ─── MongoDB ─────────────────────────────────────────────────────────────────
+// ─── Upstash Redis ────────────────────────────────────────────────────────────
 
-const mongoClient = new MongoClient(process.env.MONGODB_URI, {
-  tls: true,
-  serverSelectionTimeoutMS: 5000,
-});
-let db;
+const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
+const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-async function connectDB() {
-  await mongoClient.connect();
-  db = mongoClient.db('botRoblox');
-  console.log('✅ Conectado a MongoDB');
+async function redisGet(key) {
+  const res = await fetch(`${REDIS_URL}/get/${key}`, {
+    headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+  });
+  const data = await res.json();
+  return data.result ? JSON.parse(data.result) : null;
+}
+
+async function redisSet(key, value) {
+  await fetch(`${REDIS_URL}/set/${key}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${REDIS_TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ value: JSON.stringify(value) }),
+  });
+}
+
+async function redisDel(key) {
+  await fetch(`${REDIS_URL}/del/${key}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+  });
 }
 
 async function getUser(discordId) {
-  return db.collection('users').findOne({ discordId });
+  return redisGet(`user:${discordId}`);
 }
 
 async function saveUser(discordId, data) {
-  await db.collection('users').updateOne(
-    { discordId },
-    { $set: { discordId, ...data } },
-    { upsert: true }
-  );
+  return redisSet(`user:${discordId}`, { discordId, ...data });
 }
 
 async function deleteUser(discordId) {
-  await db.collection('users').deleteOne({ discordId });
+  return redisDel(`user:${discordId}`);
 }
 
 // ─── Discord ──────────────────────────────────────────────────────────────────
@@ -478,6 +487,7 @@ client.once('ready', () => console.log(`✅ Bot conectado como ${client.user.tag
 
 const TOKEN = process.env.DISCORD_TOKEN;
 if (!TOKEN) { console.error('❌ Falta DISCORD_TOKEN'); process.exit(1); }
-if (!process.env.MONGODB_URI) { console.error('❌ Falta MONGODB_URI'); process.exit(1); }
+if (!REDIS_URL || !REDIS_TOKEN) { console.error('❌ Faltan variables de Upstash'); process.exit(1); }
 
-connectDB().then(() => client.login(TOKEN));
+client.login(TOKEN);
+          
