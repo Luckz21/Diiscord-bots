@@ -3,7 +3,10 @@ const { MongoClient } = require('mongodb');
 
 // ─── MongoDB ─────────────────────────────────────────────────────────────────
 
-const mongoClient = new MongoClient(process.env.MONGODB_URI);
+const mongoClient = new MongoClient(process.env.MONGODB_URI, {
+  tls: true,
+  serverSelectionTimeoutMS: 5000,
+});
 let db;
 
 async function connectDB() {
@@ -478,4 +481,3 @@ if (!TOKEN) { console.error('❌ Falta DISCORD_TOKEN'); process.exit(1); }
 if (!process.env.MONGODB_URI) { console.error('❌ Falta MONGODB_URI'); process.exit(1); }
 
 connectDB().then(() => client.login(TOKEN));
-      
