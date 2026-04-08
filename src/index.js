@@ -100,8 +100,9 @@ client.on('interactionCreate', async interaction => {
 });
 
 // ─── READY ──────────────────────────────────────────────
-client.once('ready', () => {
-    log.info(`Bot online: ${client.user.tag}`);
+client.once('clientReady', () => {
+    console.log(`✅ Bot conectado: ${client.user.tag}`);
+});
     log.info(`Servers: ${client.guilds.cache.size}`);
 });
 
