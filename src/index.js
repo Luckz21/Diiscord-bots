@@ -7,9 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 // ─── VALIDACIÓN DE ENTORNO ───────────────────────────────
-const REQUIRED_ENV = [
-    'DISCORD_TOKEN'
-];
+const REQUIRED_ENV = ['DISCORD_TOKEN'];
 
 for (const key of REQUIRED_ENV) {
     if (!process.env[key]) {
@@ -102,7 +100,6 @@ client.on('interactionCreate', async interaction => {
 // ─── READY ──────────────────────────────────────────────
 client.once('clientReady', () => {
     console.log(`✅ Bot conectado: ${client.user.tag}`);
-});
     log.info(`Servers: ${client.guilds.cache.size}`);
 });
 
