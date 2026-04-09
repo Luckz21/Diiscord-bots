@@ -128,6 +128,9 @@ async function start() {
         log.info('Starting bot...');
 
         loadCommands();
+        if (process.env.DEPLOY_COMMANDS === 'true') {
+    require('./deploy-commands');
+}
 
         // Web server (Railway keep alive)
         try {
